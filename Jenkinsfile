@@ -151,6 +151,101 @@ pipeline {
             }
 
         }
-   }
+        stage('OWASP Dependency Check') {
+
+            steps {
+                script {
+                    def DC_HOME = tool 'DP-Check'
+                    withCredentials([
+                        string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')
+                    ]) {
+
+                     sh """
+                        ${DC_HOME}/bin/dependency-check.sh \
+                        --project spring-petclinic \
+                        --scan . \
+                        --format XML \
+                        --format HTML \
+                        --out dependency-check-report \
+                        --nvdApiKey ${NVD_API_KEY}
+                    """
+                }
+            }      
+
+         }
+
+       }
+       stage('Publish Dependency Check Report') {
+
+            steps {
+
+                publishHTML(target: [
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'dependency-check-report',
+                    reportFiles: 'dependency-check-report.html',
+                    reportName: 'OWASP Dependency Check Report'
+             ])
+
+          }
+
+       }
+       stage('Trivy Filesystem Scan') {
+
+             steps {
+
+                 sh '''
+                    trivy fs \
+                    --format table \
+                    --output trivy-fs-report.txt \
+                    .
+                '''
+            }
+
+       }
+       stage('Docker Build') {
+
+            steps {
+
+                sh """
+                   docker build \
+                  -t ${IMAGE_URI} .
+               """
+
+          }
+
+       }
+       stage('Trivy Image Scan') {
+
+            steps {
+
+                sh """
+                   trivy image \
+                   --severity HIGH,CRITICAL \
+                   --format table \
+                   --output trivy-image-report.txt \
+                   ${IMAGE_URI}
+                """
+
+          }
+
+       } 
+       
+  }
+  post {
+
+    always {
+
+        archiveArtifacts artifacts: '''
+            dependency-check-report/**
+            trivy-fs-report.txt
+            trivy-image-report.txt
+        '''.trim(), allowEmptyArchive: true,
+            fingerprint: true
+
+    }
+
+ }  
 
 }
