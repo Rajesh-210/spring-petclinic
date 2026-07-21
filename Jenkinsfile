@@ -58,7 +58,7 @@ pipeline {
 
                 git(
                     branch: params.GIT_BRANCH,
-                    credentialsId: 'YOUR_GITHUB_CREDENTIAL_ID',
+                    credentialsId: 'github',
                     url: 'https://github.com/Rajesh-210/spring-petclinic.git'
                 )
 
