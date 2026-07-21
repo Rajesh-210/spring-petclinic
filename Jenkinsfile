@@ -130,7 +130,8 @@ pipeline {
                     sh """
                     mvn sonar:sonar \
                     -Dsonar.projectKey=spring-petclinic \
-                    -Dsonar.projectName=spring-petclinic
+                    -Dsonar.projectName=spring-petclinic \
+                    -Dsonar.projectVersion=${BUILD_NUMBER}
                     """
 
                 }
@@ -180,7 +181,7 @@ pipeline {
             steps {
 
                 publishHTML(target: [
-                    allowMissing: false,
+                    allowMissing: true,
                     alwaysLinkToLastBuild: true,
                     keepAll: true,
                     reportDir: 'dependency-check-report',
