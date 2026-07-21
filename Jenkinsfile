@@ -115,7 +115,7 @@ pipeline {
             steps {
 
                 sh '''
-                    mvn clean package -DskipTests
+                    mvn package -DskipTests
                 '''
 
             }
