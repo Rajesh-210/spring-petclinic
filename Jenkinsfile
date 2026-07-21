@@ -161,6 +161,9 @@ pipeline {
                         string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')
                     ]) {
 
+                     sh '''
+                        mkdir -p dependency-check-report
+                     '''   
                      sh """
                         ${DC_HOME}/bin/dependency-check.sh \
                         --project spring-petclinic \
