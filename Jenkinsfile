@@ -101,7 +101,7 @@ pipeline {
         stage('Package') {
             steps {
                 sh '''
-                    mvn package -DskipTests
+                    mvn package -DskipTests clean package
                 '''
             }
         }
@@ -129,7 +129,7 @@ pipeline {
 
         stage('OWASP Dependency Check') {
             options {
-                timeout(time: 90, unit: 'MINUTES')
+                timeout(time: 180, unit: 'MINUTES')
             }
             steps {
                 script {
@@ -137,8 +137,10 @@ pipeline {
                     withCredentials([
                         string(credentialsId: 'nvd-api-key', variable: 'NVD_API_KEY')
                     ]) {
+                        withEnv(["DC_HOME=${DC_HOME}"]) {
                         sh '''
                             mkdir -p dependency-check-report
+                            mkdir -p $HOME/.dependency-check
                         '''
                         sh """
                             ${DC_HOME}/bin/dependency-check.sh \
