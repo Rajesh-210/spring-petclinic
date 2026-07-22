@@ -149,7 +149,9 @@ pipeline {
                                 --format XML \
                                 --format HTML \
                                 --out dependency-check-report \
-                                --nvdApiKey ${NVD_API_KEY}
+                                --nvdApiKey "${NVD_API_KEY}" \
+                                --nvdApiDelay 3500 \
+                                --nvdMaxRetryCount 50
                         """
                         }  
                     }
