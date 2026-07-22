@@ -128,6 +128,9 @@ pipeline {
         }
 
         stage('OWASP Dependency Check') {
+            options {
+                timeout(time: 90, unit: 'MINUTES')
+            }
             steps {
                 script {
                     def DC_HOME = tool 'DP-Check'
