@@ -151,6 +151,7 @@ pipeline {
                                 --out dependency-check-report \
                                 --nvdApiKey ${NVD_API_KEY}
                         """
+                        }  
                     }
                 }
             }
