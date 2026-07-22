@@ -70,6 +70,20 @@ pipeline {
                 '''
             }
         }
+        stage('Clean Docker Environment') {
+            steps {
+                sh '''
+                   echo "Cleaning previous Docker Compose resources..."
+
+                   docker compose down -v --remove-orphans || true
+
+                   docker container prune -f || true
+                   docker network prune -f || true
+
+                   docker ps -a
+               '''
+            }
+        }
 
         stage('Unit Test') {
             steps {
